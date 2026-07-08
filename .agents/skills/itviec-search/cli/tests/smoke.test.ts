@@ -26,8 +26,8 @@ describe("itviec-search smoke test (VN IP required)", () => {
     expect(stderr).toContain("error")
   })
 
-  // Live test — only runs from VN IP
-  test.skip("search returns real results (VN IP)", () => {
+  // Live test — confirmed working from VN IP
+  test("search returns real results (VN IP)", () => {
     const { stdout, exitCode } = runCLI([
       "search", "-q", "AI Engineer", "--limit", "3", "--format", "json",
     ])
