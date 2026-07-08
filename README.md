@@ -30,22 +30,14 @@ Fork về, điền hồ sơ, để Claude đánh giá JD, chỉnh CV, viết cov
 ### 🚀 Bắt đầu nhanh
 
 ```bash
-# Clone fork
-git clone https://github.com/jamesng16/ai-job-search-vn.git
-cd ai-job-search-vn
+# 1. Clone
+git clone https://github.com/jamesng16/ai-job-search-vn.git && cd ai-job-search-vn
 
-# ITviec — cần bun
-cd .agents/skills/itviec-search/cli && bun install && cd ../../..
-bun run .agents/skills/itviec-search/cli/src/cli.ts search -q "AI Engineer" -l "Ho Chi Minh" --format table
+# 2. Cài toàn bộ (bun + agent-browser + freehire + skill deps)
+bash install.sh
 
-# LinkedIn VN
-bun run .agents/skills/linkedin-search/cli/src/cli.ts search -q "AI Engineer" -l "Ho Chi Minh City, Vietnam" --format table
-
-# Vieclam24h — cần agent-browser
-bash .agents/skills/vieclam24h-search/scripts/search.sh "AI Engineer"
-
-# Freehire — cần API key (miễn phí tại freehire.dev)
-freehire search "AI Engineer" --country vn --json
+# 3. Tìm việc ngay
+bash scripts/vn-laptop/search-all.sh "AI Engineer"
 ```
 
 ---
