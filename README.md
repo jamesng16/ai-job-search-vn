@@ -335,6 +335,7 @@ This fork adds Vietnam-specific job portal skills. Built for the Vietnamese IT j
 | **ITviec** | ✅ Working | `bun run ... search -q "AI Engineer"` |
 | **LinkedIn VN** | ✅ Built-in | `--location "Ho Chi Minh City, Vietnam"` |
 | **Vieclam24h** | ✅ Working | `bash scripts/search.sh "AI Engineer"` (needs agent-browser) |
+| **Freehire** | ✅ Working | `freehire search "AI Engineer" --country vn` (needs free API key) |
 | **TopCV** | ❌ Blocked | Cloudflare WAF — requires browser automation |
 | **VietnamWorks** | ❌ SPA | JavaScript-rendered, needs browser approach |
 
