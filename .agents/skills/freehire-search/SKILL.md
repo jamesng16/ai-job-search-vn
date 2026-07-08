@@ -93,23 +93,21 @@ freehire my
 ## Usage examples
 
 ```bash
-# AI Engineer jobs, remote, in Asia
-freehire search "AI Engineer" --remote --region asia --limit 10 --json
+# AI Engineer jobs in Vietnam (verified — returns real results)
+freehire search "AI Engineer" --country vn --limit 5 --json
+# → tscai, Kyanon Digital, Gameloft, ...
 
-# Backend Go jobs in Germany, senior level
-freehire search "golang" --country de --seniority senior --json
+# Python jobs in Vietnam, remote
+freehire search "Python" --country vn --remote --limit 5 --json
+# → anyone-ai, WorldQuant (Hanoi/HCMC), ...
 
-# Discover what facets are available for data roles
-freehire facets --category data
+# Score your skills against the global remote market (verified)
+freehire market-fit --skills "python,rag,langgraph,yolo,fastapi,docker" --remote
+# → Coverage: 14% of 201,761 vacancies
+# → Missing high-impact: salesforce (+7%), agile (+5%), sql, aws, ml, agentic-ai...
 
-# Score your skills against the frontend market
-freehire market-fit --skills "react,typescript,nextjs" --category frontend --remote
-
-# Track a job through your pipeline
-freehire save linear-senior-backend-engineer
-freehire apply linear-senior-backend-engineer
-freehire stage linear-senior-backend-engineer interview
-```
+# Discover what facets are available (3.1M+ open vacancies across 241 countries)
+freehire facets
 
 ## Output format
 
