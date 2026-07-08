@@ -321,3 +321,28 @@ Thinking about a PR? Read [CONTRIBUTING.md](CONTRIBUTING.md) first - it explains
 ## License
 
 MIT
+
+## 🇻🇳 Vietnam Fork
+
+This fork adds Vietnam-specific job portal skills. Built for the Vietnamese IT job market.
+
+### Portal Skills
+
+| Portal | Status | Notes |
+|--------|--------|-------|
+| **ITviec** | ✅ Working | `bun run .agents/skills/itviec-search/cli/src/cli.ts search -q "AI Engineer"` |
+| **LinkedIn VN** | ✅ Built-in | Use `--location "Ho Chi Minh City, Vietnam"` |
+| **TopCV** | ❌ Blocked | Cloudflare WAF — requires browser automation |
+| **VietnamWorks** | ❌ SPA | JavaScript-rendered, needs browser approach |
+
+### Quick Start (from Vietnam IP)
+
+```bash
+# ITviec
+cd .agents/skills/itviec-search/cli && bun install
+bun run src/cli.ts search -q "AI Engineer" -l "Ho Chi Minh" --format table
+
+# LinkedIn VN
+bun run .agents/skills/linkedin-search/cli/src/cli.ts search \
+  -q "AI Engineer" -l "Ho Chi Minh City, Vietnam" --format table
+```
