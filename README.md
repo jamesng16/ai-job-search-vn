@@ -94,7 +94,7 @@ freehire search "AI Engineer" --country vn --json
 </p>
 
 <p align="center">
-  <a href="https://ko-fi.com/madslorentzen">
+  <a href="https://ko-fi.com/jamesnguyenx">
     <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=6" alt="Buy me a coffee at ko-fi.com" height="40">
   </a>
 </p>
