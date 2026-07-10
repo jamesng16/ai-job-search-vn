@@ -18,7 +18,9 @@ BUN = "/home/jamesnguyen106/.bun/bin/bun"
 BUN_DIR = os.path.dirname(BUN)
 
 LLM_CLIENT = OpenAI(
-    api_key=os.environ.get("DEEPSEEK_API_KEY", os.environ.get("OPENAI_API_KEY", "")),
+    api_key=os.environ.get("DEEPSEEK_API_KEY")
+            or os.environ.get("CUSTOM_PROVIDER_API_AI_BOX_VN_KEY")
+            or os.environ.get("OPENAI_API_KEY", ""),
     base_url=os.environ.get("DEEPSEEK_BASE_URL", "https://api.ai-box.vn/v1"),
 )
 LLM_MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
