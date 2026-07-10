@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Job Search VN — Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body>
+  <div class="drawer lg:drawer-open">
+    <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+
+    <!-- Main Content -->
+    <div class="drawer-content flex flex-col min-h-screen">
+      <!-- Navbar -->
+      <div class="navbar bg-base-200 shadow-sm sticky top-0 z-10">
+        <div class="navbar-start">
+          <label for="drawer-toggle" class="btn btn-ghost drawer-button lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+          </label>
+          <span class="text-xl font-bold ml-2 flex items-center gap-2">
+            <span class="text-primary">🤖</span> AI Job Search VN
+          </span>
+        </div>
+        <div class="navbar-end gap-2">
+          <label class="swap swap-rotate">
+            <input type="checkbox" class="theme-controller" value="dark" />
+            <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+            <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </label>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+              <span class="text-xl">👤</span>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow-sm z-20">
+              <li><a>Hồ sơ</a></li>
+              <li><a>Cài đặt</a></li>
+              <li><a href="https://ko-fi.com/jamesnguyenx" target="_blank">☕ Ủng hộ</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page Content -->
+      <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
+
+        <!-- Toast container -->
+        <div class="toast toast-end toast-top z-50 hidden" id="toast">
+          <div class="alert" id="toast-alert"><span id="toast-msg"></span></div>
+        </div>
+
+        <!-- ===== DASHBOARD PAGE ===== -->
+        <section id="page-dashboard" data-page>
+          <h1 class="text-2xl font-bold mb-6">📊 Tổng quan</h1>
+
+          <!-- Stats grid -->
+          <div class="stats shadow-sm w-full mb-6 flex flex-wrap">
+            <div class="stat">
+              <div class="stat-figure text-primary"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+              <div class="stat-title">Tổng Job</div>
+              <div class="stat-value text-primary" id="stat-total-jobs">--</div>
+              <div class="stat-desc">đang theo dõi</div>
+            </div>
+            <div class="stat">
+              <div class="stat-figure text-info"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+              <div class="stat-title">Đã Apply</div>
+              <div class="stat-value text-info" id="stat-applied">--</div>
+              <div class="stat-desc">hồ sơ đã gửi</div>
+            </div>
+            <div class="stat">
+              <div class="stat-figure text-warning"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+              <div class="stat-title">Phỏng Vấn</div>
+              <div class="stat-value text-warning" id="stat-interviewing">--</div>
+              <div class="stat-desc">đang chờ</div>
+            </div>
+            <div class="stat">
+              <div class="stat-figure text-success"><svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+              <div class="stat-title">Offers</div>
+              <div class="stat-value text-success" id="stat-offered">--</div>
+              <div class="stat-desc">đã nhận</div>
+            </div>
+          </div>
+
+          <!-- By portal + recent jobs -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="card bg-base-100 shadow-sm lg:col-span-1">
+              <div class="card-body">
+                <h2 class="card-title text-lg">📡 Theo Portal</h2>
+                <div id="portal-bars" class="space-y-3 mt-2"></div>
+              </div>
+            </div>
+            <div class="card bg-base-100 shadow-sm lg:col-span-2">
+              <div class="card-body">
+                <h2 class="card-title text-lg">🆕 Job Mới Nhất</h2>
+                <div id="recent-jobs" class="space-y-3 mt-2"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== JOB SEARCH PAGE ===== -->
+        <section id="page-jobs" data-page class="hidden">
+          <h1 class="text-2xl font-bold mb-6">🔍 Tìm Việc</h1>
+
+          <!-- Filters -->
+          <div class="card bg-base-100 shadow-sm mb-6">
+            <div class="card-body">
+              <div class="flex flex-wrap gap-3 items-end">
+                <div class="form-control flex-1 min-w-[200px]">
+                  <label class="label"><span class="label-text">Từ khóa</span></label>
+                  <input type="text" id="job-search-q" placeholder="VD: AI Engineer, Python..." class="input w-full" />
+                </div>
+                <div class="form-control w-40">
+                  <label class="label"><span class="label-text">Portal</span></label>
+                  <select id="job-search-portal" class="select w-full">
+                    <option value="">Tất cả</option>
+                  </select>
+                </div>
+                <div class="form-control w-40">
+                  <label class="label"><span class="label-text">Địa điểm</span></label>
+                  <input type="text" id="job-search-location" placeholder="HCMC..." class="input w-full" />
+                </div>
+                <button class="btn btn-primary" onclick="searchJobs()">🔍 DB</button>
+                <button class="btn btn-secondary" onclick="searchReal()" id="btn-search-real">🌐 Live Search</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div id="job-results-count" class="text-sm text-base-content/60 mb-3"></div>
+          <div id="job-results" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          <div id="job-loading" class="text-center py-8 hidden"><span class="loading loading-spinner loading-lg text-primary"></span></div>
+        </section>
+
+        <!-- ===== APPLICATIONS PAGE ===== -->
+        <section id="page-applications" data-page class="hidden">
+          <div class="flex flex-wrap justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">📋 Quản Lý Ứng Tuyển</h1>
+            <button class="btn btn-primary" onclick="openAppModal()">+ Thêm Mới</button>
+          </div>
+
+          <!-- Status filter tabs -->
+          <div role="tablist" class="tabs tabs-box mb-4">
+            <a role="tab" class="tab" data-app-filter="all" onclick="filterApps('')">Tất cả</a>
+            <a role="tab" class="tab" data-app-filter="saved" onclick="filterApps('saved')">📌 Đã Lưu</a>
+            <a role="tab" class="tab" data-app-filter="applied" onclick="filterApps('applied')">📤 Đã Apply</a>
+            <a role="tab" class="tab" data-app-filter="interviewing" onclick="filterApps('interviewing')">🎙️ Phỏng vấn</a>
+            <a role="tab" class="tab" data-app-filter="offered" onclick="filterApps('offered')">✅ Offer</a>
+            <a role="tab" class="tab" data-app-filter="rejected" onclick="filterApps('rejected')">❌ Từ chối</a>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto bg-base-100 rounded-box shadow-sm">
+            <table class="table table-zebra">
+              <thead>
+                <tr>
+                  <th>Công ty</th><th>Vị trí</th><th>Portal</th><th>Trạng thái</th><th>Ngày Apply</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="app-table-body"></tbody>
+            </table>
+          </div>
+          <div id="app-empty" class="text-center py-12 text-base-content/50 hidden">Chưa có hồ sơ nào. Nhấn "Thêm Mới" để bắt đầu!</div>
+        </section>
+
+        <!-- ===== SETUP PAGE ===== -->
+        <section id="page-setup" data-page class="hidden">
+          <h1 class="text-2xl font-bold mb-6">⚙️ Setup — Dành cho người mới</h1>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Card 1: Portal links -->
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title text-lg">🌐 Portal tuyển dụng IT VN</h2>
+                <p class="text-sm text-base-content/60 mb-3">Click vào link để mở trang tìm việc, đăng ký tài khoản nếu cần.</p>
+                <div class="space-y-2">
+                  <a href="https://itviec.com/it-jobs" target="_blank" class="btn btn-outline btn-sm w-full justify-start gap-3">
+                    <span class="badge badge-success badge-sm">✅</span> ITviec — itviec.com
+                  </a>
+                  <a href="https://www.linkedin.com/jobs/search/?location=Vietnam" target="_blank" class="btn btn-outline btn-sm w-full justify-start gap-3">
+                    <span class="badge badge-info badge-sm">LinkedIn</span> LinkedIn VN
+                  </a>
+                  <a href="https://vieclam24h.vn/tim-viec-lam" target="_blank" class="btn btn-outline btn-sm w-full justify-start gap-3">
+                    <span class="badge badge-warning badge-sm">🌐</span> Vieclam24h
+                  </a>
+                  <a href="https://freehire.dev" target="_blank" class="btn btn-outline btn-sm w-full justify-start gap-3">
+                    <span class="badge badge-accent badge-sm">Free</span> Freehire (cần API key miễn phí)
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Facebook setup -->
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title text-lg">👤 Facebook Clone Account</h2>
+                <p class="text-sm text-base-content/60 mb-3">Cần acc clone để crawl job từ group FB (tránh rủi ro khóa acc chính).</p>
+                <ol class="list-decimal list-inside text-sm space-y-2 mb-3">
+                  <li>Tạo email mới (không liên kết với acc FB chính)</li>
+                  <li>Đăng ký FB với tên tiếng Việt, thêm ảnh đại diện</li>
+                  <li>Dùng acc tự nhiên 3-5 ngày: like, comment, kết bạn</li>
+                  <li>Join các group IT: <span class="text-primary">AI/ML Vietnam</span>, <span class="text-primary">Computer Vision Vietnam</span>, <span class="text-primary">Data Science VN</span></li>
+                </ol>
+                <details class="collapse collapse-arrow bg-base-200">
+                  <summary class="collapse-title text-sm font-medium">📖 Xem hướng dẫn chi tiết</summary>
+                  <div class="collapse-content text-xs">
+                    <p class="mb-2">Xem file <code>web/warmup_guide.md</code> trong project để biết chi tiết từng bước warm-up.</p>
+                    <p>Sau khi warm-up xong, chạy lệnh:</p>
+                    <div class="mockup-code py-2 mt-1">
+                      <pre><code>crwl profiles</code></pre>
+                    </div>
+                    <p class="mt-1">Chọn "Create new profile" → đặt tên <code>fb-clone</code> → login acc clone → nhấn <kbd class="kbd kbd-xs">q</kbd> để lưu.</p>
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <!-- Card 3: Crawl4ai install -->
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title text-lg">🛠️ Cài đặt công cụ</h2>
+                <p class="text-sm text-base-content/60 mb-3">Chạy các lệnh sau trong terminal:</p>
+                <div class="space-y-3">
+                  <div>
+                    <div class="text-xs font-semibold mb-1">1. Cài crawl4ai (Facebook crawler)</div>
+                    <div class="mockup-code py-2">
+                      <pre><code>pip install crawl4ai && crawl4ai-setup</code></pre>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-xs font-semibold mb-1">2. Cài Bun (JavaScript runtime)</div>
+                    <div class="mockup-code py-2">
+                      <pre><code>curl -fsSL https://bun.sh/install | bash</code></pre>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-xs font-semibold mb-1">3. Cài deps cho ITviec CLI</div>
+                    <div class="mockup-code py-2">
+                      <pre><code>cd .agents/skills/itviec-search/cli && bun install</code></pre>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-xs font-semibold mb-1">4. Khởi động dashboard</div>
+                    <div class="mockup-code py-2">
+                      <pre><code>cd web && python3 server.py</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Tips -->
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title text-lg">💡 Mẹo sử dụng</h2>
+                <ul class="list-disc list-inside text-sm space-y-2 text-base-content/70">
+                  <li><span class="font-semibold text-base-content">🔍 DB</span> = tìm trong database đã crawl trước đó (nhanh)</li>
+                  <li><span class="font-semibold text-base-content">🌐 Live Search</span> = crawl trực tiếp từ portal (chậm hơn, data mới nhất)</li>
+                  <li>Click vào <strong>job card</strong> để lưu nhanh vào danh sách ứng tuyển</li>
+                  <li>Chọn <strong>portal Facebook</strong> rồi Live Search để crawl group FB</li>
+                  <li>Dashboard tự động dedup job trùng (cùng source_id + portal)</li>
+                  <li>Theme sáng/tối: toggle ở góc phải trên cùng ☀️🌙</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="drawer-side z-20">
+      <label for="drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+      <aside class="bg-base-200 w-64 min-h-full flex flex-col">
+        <div class="p-4 text-center border-b border-base-300">
+          <span class="text-2xl font-bold text-primary">🤖 AI Job Search</span>
+          <p class="text-xs text-base-content/50 mt-1">v2.0.0 — Real Data Edition</p>
+        </div>
+        <ul class="menu flex-1 p-2 gap-1">
+          <li><a class="font-medium" data-nav="dashboard" onclick="navTo('dashboard')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+            Dashboard
+          </a></li>
+          <li><a class="font-medium" data-nav="jobs" onclick="navTo('jobs')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Tìm Việc
+          </a></li>
+          <li><a class="font-medium" data-nav="applications" onclick="navTo('applications')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            Ứng Tuyển
+          </a></li>
+          <li><a class="font-medium" data-nav="setup" onclick="navTo('setup')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Setup
+          </a></li>
+        </ul>
+        <div class="p-4 border-t border-base-300 text-xs text-base-content/50">
+          <p>Fork từ <a href="https://github.com/jamesng16/ai-job-search-vn" target="_blank" class="link link-hover">jamesng16/ai-job-search-vn</a></p>
+          <p class="mt-1">PR <a href="https://github.com/MadsLorentzen/ai-job-search/pull/83" target="_blank" class="link link-hover">#83 upstream</a></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ===== ADD/EDIT APPLICATION MODAL ===== -->
+  <dialog id="app-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-lg">
+      <h3 class="text-lg font-bold mb-4" id="app-modal-title">Thêm Ứng Tuyển Mới</h3>
+      <form id="app-form" onsubmit="saveApp(event)" class="space-y-3">
+        <input type="hidden" id="app-id" />
+        <div class="form-control">
+          <label class="label"><span class="label-text">Tên công ty *</span></label>
+          <input type="text" id="app-company" class="input w-full" required placeholder="VD: FPT Software" />
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Vị trí *</span></label>
+          <input type="text" id="app-title" class="input w-full" required placeholder="VD: AI Engineer" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Portal</span></label>
+            <select id="app-portal" class="select w-full">
+              <option>ITviec</option><option>LinkedIn</option><option>Vieclam24h</option><option>Freehire</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Trạng thái</span></label>
+            <select id="app-status" class="select w-full">
+              <option value="saved">📌 Đã lưu</option>
+              <option value="applied">📤 Đã apply</option>
+              <option value="interviewing">🎙️ Phỏng vấn</option>
+              <option value="offered">✅ Offer</option>
+              <option value="rejected">❌ Từ chối</option>
+              <option value="archived">🗄️ Lưu trữ</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Địa điểm</span></label>
+            <input type="text" id="app-location" class="input w-full" placeholder="Ho Chi Minh City" />
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Lương</span></label>
+            <input type="text" id="app-salary" class="input w-full" placeholder="$1000-$2000" />
+          </div>
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Link JD</span></label>
+          <input type="url" id="app-url" class="input w-full" placeholder="https://..." />
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Ghi chú</span></label>
+          <textarea id="app-notes" class="textarea h-20" placeholder="Ghi chú thêm..."></textarea>
+        </div>
+        <div class="modal-action">
+          <button type="button" class="btn btn-ghost" onclick="closeAppModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">💾 Lưu</button>
+        </div>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <script>
+    // ==================== NAVIGATION ====================
+    let currentPage = 'dashboard';
+    let currentAppFilter = '';
+
+    function navTo(page) {
+      currentPage = page;
+      document.querySelectorAll('[data-page]').forEach(s => s.classList.add('hidden'));
+      document.getElementById('page-' + page).classList.remove('hidden');
+      document.querySelectorAll('[data-nav]').forEach(a => a.classList.remove('active'));
+      document.querySelector('[data-nav="' + page + '"]').classList.add('active');
+
+      if (page === 'dashboard') loadDashboard();
+      if (page === 'jobs') { loadPortals(); searchJobs(); }
+      if (page === 'applications') loadApplications();
+      // setup page is static, no data load needed
+    }
+
+    // ==================== API HELPERS ====================
+    async function api(url, opts = {}) {
+      try {
+        const res = await fetch(url, opts);
+        if (!res.ok) throw new Error(await res.text());
+        return await res.json();
+      } catch (e) {
+        showToast('Lỗi: ' + e.message, 'error');
+        throw e;
+      }
+    }
+
+    function showToast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      const a = document.getElementById('toast-alert');
+      const m = document.getElementById('toast-msg');
+      a.className = 'alert alert-' + (type === 'error' ? 'error' : 'success');
+      m.textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3000);
+    }
+
+    // ==================== DASHBOARD ====================
+    async function loadDashboard() {
+      const stats = await api('/api/stats');
+      document.getElementById('stat-total-jobs').textContent = stats.total_jobs;
+      document.getElementById('stat-applied').textContent = stats.applied;
+      document.getElementById('stat-interviewing').textContent = stats.interviewing;
+      document.getElementById('stat-offered').textContent = stats.offered;
+
+      // Portal bars
+      const bars = document.getElementById('portal-bars');
+      bars.innerHTML = Object.entries(stats.by_portal).map(([k, v]) => {
+        const pct = Math.round(v / stats.total_jobs * 100);
+        return `<div><div class="flex justify-between text-sm mb-1"><span>${k}</span><span class="font-semibold">${v}</span></div><progress class="progress progress-primary w-full" value="${pct}" max="100"></progress></div>`;
+      }).join('');
+
+      // Recent jobs
+      const { jobs } = await api('/api/jobs?limit=6');
+      const rj = document.getElementById('recent-jobs');
+      rj.innerHTML = jobs.map(j => `
+        <div class="flex items-center justify-between p-3 bg-base-200 rounded-box">
+          <div>
+            <div class="font-semibold">${j.job_title}</div>
+            <div class="text-sm text-base-content/60">${j.company} — ${j.location}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="badge badge-ghost badge-sm">${j.portal}</span>
+            <span class="text-xs text-base-content/40">${j.posted_date || ''}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ==================== JOB SEARCH ====================
+    async function loadPortals() {
+      const { portals } = await api('/api/portals');
+      const sel = document.getElementById('job-search-portal');
+      portals.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+    }
+
+    async function searchJobs() {
+      const q = document.getElementById('job-search-q').value;
+      const portal = document.getElementById('job-search-portal').value;
+      const location = document.getElementById('job-search-location').value;
+      const params = new URLSearchParams({ q, portal, location, limit: '50' });
+      document.getElementById('job-loading').classList.remove('hidden');
+      document.getElementById('job-results').innerHTML = '';
+
+      const data = await api('/api/jobs?' + params);
+      document.getElementById('job-loading').classList.add('hidden');
+      renderJobs(data);
+    }
+
+    async function searchReal() {
+      const q = document.getElementById('job-search-q').value || 'python';
+      const location = document.getElementById('job-search-location').value;
+      const btn = document.getElementById('btn-search-real');
+      btn.disabled = true;
+      btn.textContent = '⏳ Searching...';
+      document.getElementById('job-loading').classList.remove('hidden');
+      document.getElementById('job-results').innerHTML = '';
+
+      try {
+        const data = await api('/api/search/realtime', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q, location: location, limit: 20, portals: ['ITviec'] })
+        });
+        showToast(`🌐 Live search: found ${data.total_found}, stored ${data.stored} new`, 'success');
+        renderJobs(data);
+      } catch (e) {
+        showToast('Live search failed, falling back to DB', 'error');
+        searchJobs();
+      }
+      document.getElementById('job-loading').classList.add('hidden');
+      btn.disabled = false;
+      btn.textContent = '🌐 Live Search';
+    }
+
+    function renderJobs(data) {
+      document.getElementById('job-results-count').textContent = `Tìm thấy ${data.total || data.jobs?.length || 0} job`;
+      const jobs = data.jobs || [];
+      document.getElementById('job-results').innerHTML = jobs.map(j => `
+        <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onclick="quickSave('${j.job_title.replace(/'/g, "\\'")}','${j.company.replace(/'/g, "\\'")}','${j.portal}','${j.location}','${(j.salary||'').replace(/'/g, "\\'")}','${(j.job_url||'').replace(/'/g, "\\'")}')">
+          <div class="card-body p-4">
+            <h3 class="card-title text-base">${j.job_title}</h3>
+            <p class="text-sm text-base-content/70">${j.company} — ${j.location}</p>
+            <p class="text-xs text-base-content/50 line-clamp-2">${j.description || ''}</p>
+            <div class="card-actions justify-between items-center mt-2">
+              <div class="flex gap-1">
+                <span class="badge badge-ghost badge-sm">${j.portal}</span>
+                ${j.salary ? `<span class="badge badge-success badge-soft badge-sm">${j.salary}</span>` : ''}
+              </div>
+              <span class="text-xs text-base-content/40">${j.posted_date || ''}</span>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    function quickSave(title, company, portal, location, salary, url) {
+      document.getElementById('app-company').value = company;
+      document.getElementById('app-title').value = title;
+      document.getElementById('app-portal').value = portal;
+      document.getElementById('app-location').value = location;
+      document.getElementById('app-salary').value = salary;
+      document.getElementById('app-url').value = url;
+      document.getElementById('app-status').value = 'saved';
+      document.getElementById('app-notes').value = '';
+      document.getElementById('app-id').value = '';
+      document.getElementById('app-modal-title').textContent = 'Lưu Job Nhanh';
+      document.getElementById('app-modal').showModal();
+    }
+
+    // ==================== APPLICATIONS ====================
+    async function loadApplications() {
+      const params = currentAppFilter ? '?status=' + currentAppFilter : '';
+      const { applications } = await api('/api/applications' + params);
+      const tbody = document.getElementById('app-table-body');
+      const empty = document.getElementById('app-empty');
+
+      if (applications.length === 0) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      const statusBadge = {
+        saved: 'badge-ghost', applied: 'badge-info', interviewing: 'badge-warning',
+        offered: 'badge-success', rejected: 'badge-error', archived: 'badge-neutral'
+      };
+      const statusIcon = {
+        saved: '📌', applied: '📤', interviewing: '🎙️', offered: '✅', rejected: '❌', archived: '🗄️'
+      };
+
+      tbody.innerHTML = applications.map(a => `
+        <tr class="hover">
+          <td class="font-semibold">${a.company}</td>
+          <td>${a.job_title}</td>
+          <td><span class="badge badge-sm badge-outline">${a.portal}</span></td>
+          <td><span class="badge badge-sm ${statusBadge[a.status] || 'badge-ghost'}">${statusIcon[a.status] || ''} ${a.status}</span></td>
+          <td class="text-sm">${a.applied_date ? a.applied_date.slice(0,10) : '—'}</td>
+          <td>
+            <div class="flex gap-1">
+              <button class="btn btn-ghost btn-xs" onclick="editApp(${a.id})" title="Sửa">✏️</button>
+              <button class="btn btn-ghost btn-xs text-error" onclick="deleteApp(${a.id})" title="Xóa">🗑️</button>
+            </div>
+          </td>
+        </tr>`).join('');
+
+      // Highlight active filter tab
+      document.querySelectorAll('[data-app-filter]').forEach(t => {
+        t.classList.toggle('tab-active', t.dataset.appFilter === currentAppFilter);
+      });
+    }
+
+    function filterApps(status) {
+      currentAppFilter = status;
+      loadApplications();
+    }
+
+    function openAppModal() {
+      document.getElementById('app-form').reset();
+      document.getElementById('app-id').value = '';
+      document.getElementById('app-modal-title').textContent = 'Thêm Ứng Tuyển Mới';
+      document.getElementById('app-modal').showModal();
+    }
+
+    function closeAppModal() {
+      document.getElementById('app-modal').close();
+    }
+
+    async function editApp(id) {
+      const app = await api('/api/applications/' + id);
+      document.getElementById('app-id').value = app.id;
+      document.getElementById('app-company').value = app.company;
+      document.getElementById('app-title').value = app.job_title;
+      document.getElementById('app-portal').value = app.portal;
+      document.getElementById('app-status').value = app.status;
+      document.getElementById('app-location').value = app.location || '';
+      document.getElementById('app-salary').value = app.salary || '';
+      document.getElementById('app-url').value = app.job_url || '';
+      document.getElementById('app-notes').value = app.notes || '';
+      document.getElementById('app-modal-title').textContent = 'Sửa Ứng Tuyển';
+      document.getElementById('app-modal').showModal();
+    }
+
+    async function saveApp(e) {
+      e.preventDefault();
+      const id = document.getElementById('app-id').value;
+      const body = {
+        company: document.getElementById('app-company').value,
+        job_title: document.getElementById('app-title').value,
+        portal: document.getElementById('app-portal').value,
+        status: document.getElementById('app-status').value,
+        location: document.getElementById('app-location').value,
+        salary: document.getElementById('app-salary').value || null,
+        job_url: document.getElementById('app-url').value || null,
+        notes: document.getElementById('app-notes').value || null,
+      };
+      if (body.status === 'applied' && !id) body.applied_date = new Date().toISOString();
+
+      if (id) {
+        await api('/api/applications/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        showToast('Đã cập nhật! ✅');
+      } else {
+        await api('/api/applications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        showToast('Đã thêm mới! ✅');
+      }
+      closeAppModal();
+      loadApplications();
+    }
+
+    async function deleteApp(id) {
+      if (!confirm('Xóa ứng tuyển này?')) return;
+      await api('/api/applications/' + id, { method: 'DELETE' });
+      showToast('Đã xóa!');
+      loadApplications();
+      if (currentPage === 'dashboard') loadDashboard();
+    }
+
+    // ==================== INIT ====================
+    navTo('dashboard');
+  </script>
+</body>
+</html>
