@@ -3,6 +3,8 @@ import subprocess
 import json
 import os
 import time
+import hashlib
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 import json as json_mod
@@ -86,6 +88,33 @@ def _post_matches_keywords(text: str, keywords: list[str]) -> bool:
     )
 
 
+def _extract_posted_date(text: str) -> str:
+    """Extract a posted date from post text using regex patterns.
+    
+    Supports: ISO dates (2024-07-10), DD/MM/YYYY, 'hôm nay', 'hôm qua'.
+    Returns YYYY-MM-DD string or empty string.
+    """
+    # ISO format: 2024-07-10 or 2024-07-10T12:00:00
+    iso_match = re.search(r"(\d{4})-(\d{2})-(\d{2})", text)
+    if iso_match:
+        return f"{iso_match.group(1)}-{iso_match.group(2)}-{iso_match.group(3)}"
+
+    # DD/MM/YYYY format: 10/07/2024
+    slash_match = re.search(r"(\d{2})/(\d{2})/(\d{4})", text)
+    if slash_match:
+        return f"{slash_match.group(3)}-{slash_match.group(2)}-{slash_match.group(1)}"
+
+    # Vietnamese relative dates
+    text_lower = text.lower()
+    today = date.today()
+    if "hôm nay" in text_lower:
+        return today.isoformat()
+    if "hôm qua" in text_lower:
+        return (today - timedelta(days=1)).isoformat()
+
+    return ""
+
+
 def _llm_extract_job(post_text: str, post_url: str, author: str, date: str) -> dict | None:
     """Extract structured job info from a Facebook post using LLM."""
     prompt = f"""You are a job listing extractor. Given a Vietnamese Facebook post,
@@ -112,13 +141,27 @@ Rules:
 - Do NOT invent information not in the post"""
 
     try:
-        resp = LLM_CLIENT.chat.completions.create(
-            model=LLM_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            max_tokens=500,
-        )
-        text = resp.choices[0].message.content.strip()
+        max_retries = 3
+        text = None
+        for attempt in range(max_retries):
+            try:
+                resp = LLM_CLIENT.chat.completions.create(
+                    model=LLM_MODEL,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1,
+                    max_tokens=500,
+                )
+                text = resp.choices[0].message.content.strip()
+                break
+            except Exception as retry_e:
+                if attempt < max_retries - 1:
+                    delay = 2 ** attempt
+                    print(f"[search_adapter] LLM retry {attempt + 1}/{max_retries} after {delay}s: {retry_e}")
+                    time.sleep(delay)
+                else:
+                    raise
+        if text is None:
+            return None
         # Strip markdown code fences if present
         if text.startswith("```"):
             text = text.split("\n", 1)[1].rsplit("\n", 1)[0]
@@ -134,7 +177,7 @@ Rules:
             "job_url": post_url,
             "description": data.get("description") or "",
             "posted_date": date or "",
-            "source_id": f"fb_{hash(post_url) & 0x7FFFFFFF:08x}",
+            "source_id": f"fb_{hashlib.sha256(post_url.encode()).hexdigest()[:16]}",
         }
     except Exception as e:
         print(f"[search_adapter] LLM extract error: {e}")
@@ -187,7 +230,7 @@ def search_freehire(query: str, location: str = "", limit: int = 10) -> list[dic
 
 
 async def _crawl_facebook_group(
-    crawler: AsyncWebCrawler, group_url: str, keywords: list[str], limit: int
+    crawler: AsyncWebCrawler, group_url: str, keywords: list[str], location: str, limit: int
 ) -> list[dict]:
     """Crawl one Facebook group and extract job posts."""
     jobs = []
@@ -219,8 +262,14 @@ async def _crawl_facebook_group(
             author_match = re.search(r"^\*?\*?([A-ZÀ-ỹ][a-zà-ỹ]+(?:\s[A-ZÀ-ỹ][a-zà-ỹ]+){1,4})\*?\*?", post_text)
             author = author_match.group(1) if author_match else ""
 
-            job = _llm_extract_job(post_text, post_url, author, "")
+            # Extract date from post text
+            post_date = _extract_posted_date(post_text)
+
+            job = _llm_extract_job(post_text, post_url, author, post_date)
             if job:
+                # Filter by location if specified
+                if location and location.lower() not in (job.get("location") or "").lower():
+                    continue
                 jobs.append(job)
                 if len(jobs) >= limit:
                     break
@@ -252,7 +301,7 @@ def search_facebook(query: str, location: str = "", limit: int = 10) -> list[dic
     if not groups:
         return []
 
-    keywords = _expand_keywords(query)
+    keywords = _expand_keywords(f"{query} {location}")
     profile_dir = os.path.expanduser("~/.crawl4ai/profiles/fb-clone")
 
     if not os.path.isdir(profile_dir):
@@ -271,7 +320,7 @@ def search_facebook(query: str, location: str = "", limit: int = 10) -> list[dic
         async with AsyncWebCrawler(config=browser_config) as crawler:
             for group in groups:
                 group_jobs = await _crawl_facebook_group(
-                    crawler, group["url"], keywords, max(limit // len(groups), 3)
+                    crawler, group["url"], keywords, location, max(limit // len(groups), 3)
                 )
                 jobs.extend(group_jobs)
                 if len(jobs) >= limit:
