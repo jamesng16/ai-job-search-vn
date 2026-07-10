@@ -238,7 +238,7 @@ async def _crawl_facebook_group(
             url=group_url,
             config=CrawlerRunConfig(
                 magic=True,
-                page_timeout=30000,
+                page_timeout=20000,
             ),
         )
         if not result or not result.success:
@@ -294,7 +294,7 @@ async def _crawl_facebook_group(
     return jobs
 
 
-def search_facebook(query: str, location: str = "", limit: int = 10) -> list[dict]:
+def search_facebook(query: str, location: str = "", limit: int = 10, max_groups: int = 4) -> list[dict]:
     """Search Facebook groups for job posts matching query.
 
     Uses crawl4ai with managed browser profile for authenticated FB access.
@@ -332,9 +332,9 @@ def search_facebook(query: str, location: str = "", limit: int = 10) -> list[dic
     async def _crawl():
         jobs = []
         async with AsyncWebCrawler(config=browser_config) as crawler:
-            for group in groups:
+            for group in groups[:max_groups]:
                 group_jobs = await _crawl_facebook_group(
-                    crawler, group["url"], keywords, location, max(limit // len(groups), 3)
+                    crawler, group["url"], keywords, location, max(limit // max_groups, 2)
                 )
                 jobs.extend(group_jobs)
                 if len(jobs) >= limit:
