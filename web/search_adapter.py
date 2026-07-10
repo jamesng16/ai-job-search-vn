@@ -80,12 +80,9 @@ def _expand_keywords(query: str) -> list[str]:
 
 
 def _post_matches_keywords(text: str, keywords: list[str]) -> bool:
-    """Check if post text contains any keyword (case-insensitive)."""
+    """Check if post text contains any keyword (case-insensitive, simple substring)."""
     text_lower = text.lower()
-    return any(
-        re.search(r"\b" + re.escape(kw) + r"\b", text_lower)
-        for kw in keywords
-    )
+    return any(kw in text_lower for kw in keywords)
 
 
 def _extract_posted_date(text: str) -> str:
@@ -238,8 +235,8 @@ async def _crawl_facebook_group(
         result = await crawler.arun(
             url=group_url,
             config=CrawlerRunConfig(
+                magic=True,
                 page_timeout=30000,
-                scan_full_page=True,
             ),
         )
         if not result or not result.success:
@@ -247,8 +244,24 @@ async def _crawl_facebook_group(
             return jobs
 
         markdown = result.markdown or ""
-        # Split into individual posts by common FB post separators
-        posts = re.split(r"\n---\n|\n####\n|\n\n\[", markdown)
+        # Facebook mbasic: posts start with **Heading** (job title, often with [location] tag)
+        # Split on bold headings that look like post titles (NOT sub-headings like **Yêu cầu:**)
+        raw_chunks = re.split(r"\n(?=\*\*(?:\[)?[A-ZÀ-Ỹ][^*]+\*\*\n)", markdown)
+        if len(raw_chunks) <= 1:
+            raw_chunks = re.split(r"\n\n+", markdown)
+        # Remove nav/header chunk
+        if raw_chunks and "**" not in raw_chunks[0][:200]:
+            raw_chunks = raw_chunks[1:]
+        # Merge small sub-chunks (like "**Yêu cầu:**") into previous chunk
+        posts = []
+        for chunk in raw_chunks:
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            if posts and len(chunk) < 150 and not re.match(r"\*\*\[?[A-Z]", chunk):
+                posts[-1] += "\n" + chunk  # merge sub-heading into parent post
+            else:
+                posts.append(chunk)
 
         for post_text in posts[:limit * 2]:
             post_text = post_text.strip()
