@@ -1,8 +1,20 @@
 {
   "groups": [
     {
-      "name": "Việc làm IT VN",
+      "name": "Việc làm IT VN (main)",
       "url": "https://mbasic.facebook.com/groups/vieclam.itvnn/"
+    },
+    {
+      "name": "Việc làm IT CNTT Việt Nam",
+      "url": "https://mbasic.facebook.com/groups/vieclamitcnttvietnam/"
+    },
+    {
+      "name": "IT Hot Jobs — Tuyển Dụng IT",
+      "url": "https://mbasic.facebook.com/groups/ithotjobs.tuyendungit.vieclamcntt.susudev/"
+    },
+    {
+      "name": "Tuyển Dụng Ngành Dữ Liệu",
+      "url": "https://mbasic.facebook.com/groups/tuyendungnganhdulieu/"
     },
     {
       "name": "Vũ Trụ AI",
@@ -11,6 +23,26 @@
     {
       "name": "AI Art Works VN",
       "url": "https://mbasic.facebook.com/groups/aiartworksvn/"
+    },
+    {
+      "name": "Group IT 1329",
+      "url": "https://mbasic.facebook.com/groups/1329241984892387/"
+    },
+    {
+      "name": "Group IT 1407",
+      "url": "https://mbasic.facebook.com/groups/1407434203194440/"
+    },
+    {
+      "name": "Group IT 1450",
+      "url": "https://mbasic.facebook.com/groups/1450219003271674/"
+    },
+    {
+      "name": "Group IT 3262",
+      "url": "https://mbasic.facebook.com/groups/3262256010653927/"
+    },
+    {
+      "name": "Group IT 3616",
+      "url": "https://mbasic.facebook.com/groups/361676831795941/"
     }
   ]
 }
