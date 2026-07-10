@@ -496,6 +496,7 @@
               <div class="flex gap-1">
                 <span class="badge badge-ghost badge-sm">${j.portal}</span>
                 ${j.salary ? `<span class="badge badge-success badge-soft badge-sm">${j.salary}</span>` : ''}
+                ${j.job_url ? `<a href="${j.job_url}" target="_blank" class="btn btn-ghost btn-xs" onclick="event.stopPropagation()" title="Mở link JD">🔗</a>` : ''}
               </div>
               <span class="text-xs text-base-content/40">${j.posted_date || ''}</span>
             </div>
