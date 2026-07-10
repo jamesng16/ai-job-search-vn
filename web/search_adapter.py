@@ -238,7 +238,6 @@ async def _crawl_facebook_group(
         result = await crawler.arun(
             url=group_url,
             config=CrawlerRunConfig(
-                wait_for="div[role='feed']",
                 page_timeout=30000,
                 scan_full_page=True,
             ),
@@ -302,7 +301,7 @@ def search_facebook(query: str, location: str = "", limit: int = 10) -> list[dic
         return []
 
     keywords = _expand_keywords(f"{query} {location}")
-    profile_dir = os.path.expanduser("~/.crawl4ai/profiles/fb-clone")
+    profile_dir = os.path.expanduser("~/.crawl4ai/profiles/fb")
 
     if not os.path.isdir(profile_dir):
         print(f"[search_adapter] FB profile not found at {profile_dir}. Run: crwl profiles")
