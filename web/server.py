@@ -215,7 +215,7 @@ def search_realtime(req: SearchRequest):
 # --- Portals ---
 @app.get("/api/portals")
 def list_portals():
-    return {"portals": ["ITviec", "LinkedIn", "Freehire", "Facebook"]}
+    return {"portals": ["ITviec", "LinkedIn", "Facebook"]}
 
 
 # --- Applications CRUD (unchanged from v1) ---
