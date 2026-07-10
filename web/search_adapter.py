@@ -116,11 +116,14 @@ def _extract_posted_date(text: str) -> str:
 
 def _llm_extract_job(post_text: str, post_url: str, author: str, date: str) -> dict | None:
     """Extract structured job info from a Facebook post using LLM."""
-    prompt = f"""You are a job listing extractor. Given a Vietnamese Facebook post,
-extract job information. Return ONLY valid JSON, no explanation, no markdown.
+    prompt = f"""You are a job listing extractor for Vietnamese Facebook posts.
+Extract job information from the post below. Posts may contain both Vietnamese text
+and image descriptions (OCR-like text from job posters).
 
-Post text:
-{post_text[:2000]}
+Return ONLY valid JSON, no explanation, no markdown.
+
+Post:
+{post_text[:3000]}
 
 Return JSON with this exact schema:
 {{
@@ -136,6 +139,8 @@ Return JSON with this exact schema:
 Rules:
 - is_job=true ONLY if the post is clearly advertising a job opening
 - NOT a job if: selling courses, looking for job (người tìm việc), sharing articles
+- If the post contains an image description with job titles (e.g. \"PHP DEVELOPER\", \"AI Engineer\"), extract ALL listed jobs
+- For company name: use the author name if company not explicitly stated
 - Extract ALL available fields, use null for missing
 - Do NOT invent information not in the post"""
 
@@ -246,9 +251,9 @@ async def _crawl_facebook_group(
             return jobs
 
         markdown = result.markdown or ""
-        # Facebook mbasic: posts start with **Heading** (job title, often with [location] tag)
-        # Split on bold headings that look like post titles (NOT sub-headings like **Yêu cầu:**)
-        raw_chunks = re.split(r"\n(?=\*\*(?:\[)?[A-ZÀ-Ỹ][^*]+\*\*\n)", markdown)
+        # Facebook mbasic: posts start with ## **AuthorName**
+        # Also handle plain **Heading** (older format)
+        raw_chunks = re.split(r"\n(?=##\s*\*\*|\*\*(?:\[)?[A-ZÀ-Ỹ])", markdown)
         if len(raw_chunks) <= 1:
             raw_chunks = re.split(r"\n\n+", markdown)
         # Remove nav/header chunk
@@ -294,7 +299,7 @@ async def _crawl_facebook_group(
     return jobs
 
 
-def search_facebook(query: str, location: str = "", limit: int = 10, max_groups: int = 4) -> list[dict]:
+def search_facebook(query: str, location: str = "", limit: int = 10, max_groups: int = 8) -> list[dict]:
     """Search Facebook groups for job posts matching query.
 
     Uses crawl4ai with managed browser profile for authenticated FB access.
